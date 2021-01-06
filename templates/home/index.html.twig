@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
+{% block body %}
+    {# {{ parent() }} #}
+
+    {# commentaire en twig #}
+
+    {# CONTENU ACCUEIL #}
+
+    {# <p>{{ test|capitalize }}</p> #}
+
+    {# foreach ($posts as $post) {} #}
+
+    <div class="row">
+        {% for post in posts %}
+            <div class="card mb-4 col-xl-3">
+                <div class="card-header">
+                    <figure class="figure">
+                        <img src="{{ post.image }}" alt="{{ post.title }}" class="figure-img img-fluid rounded">
+                    </figure>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <p class="card-text">{{ post.content|slice(0, 150) }} ...</p>
+                    <a href="#" class="btn btn-primary">Lire la suite</a>
+                </div>
+                <div class="card-footer text-muted">Créé par {{ post.author }} le {{ post.createdAt|date("d/m/Y", "Europe/Paris") }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
