@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} - {{ post.title }} {% endblock %}
+
+{% block body %}
+
+    <!-- Affichage de l'article -->
+    <h2>{{ post.title }}</h2>
+    <span class="badge bg-secondary">{{ post.category.name }}</span>
+
+    <p class="lead">Créé par {{ post.user.fullname }} le {{ post.createdAt|date('d/m/Y') }}</p>
+
+    <img src="{{ post.image }}" alt="{{ post.title }}" class="img-fluid rounded">
+
+    <p class="lead">{{ post.content }}</p>
+
+    <!-- Affichage des commentaires associés à l'article -->
+    <h3>Commentaires</h3>
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+
+        <!-- Formulaire d'ajout de commentaire -->
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Envoyer" class="btn btn-primary my-3">
+        {{ form_end(form) }}
+
+    {% else %}
+        <p>Pour poster un commentaire, <a href="{{ path('security.login') }}">connectez-vous</a> ou <a href="#">créez un compte</a>.</p>
+    {% endif %}
+
+    <!-- Liste des commentaires -->
+    {% if post.comments|length == 0 %}
+        <p>Soyez le premier à commenter cet article!</p>
+    {%  else %}
+        <ul>
+            {% for comment in post.comments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title">Ajouté par {{ comment.user.fullname }} le {{ comment.createdAt|date("d/m/Y", 'Europe/Paris') }} à {{ comment.createdAt|date("H:i") }}</h4>
+                        <p class="card-text">{{ comment.content }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}

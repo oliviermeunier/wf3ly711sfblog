@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} - Créer un compte{% endblock %}
+
+{% block body %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <input type="submit" value="Envoyer" class="btn btn-primary my-3">
+    {{ form_end(form) }}
+
+{% endblock %}

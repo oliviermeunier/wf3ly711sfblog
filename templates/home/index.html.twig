@@ -28,10 +28,11 @@
                 </div>
                 <div class="card-body">
                     <h2 class="card-title">{{ post.title }}</h2>
+                    <span class="badge bg-secondary">{{ post.category.name }}</span>
                     <p class="card-text">{{ post.content|slice(0, 150) }} ...</p>
-                    <a href="#" class="btn btn-primary">Lire la suite</a>
+                    <a href="{{ path('post.index', {'slug': post.slug}) }}" class="btn btn-primary">Lire la suite</a>
                 </div>
-                <div class="card-footer text-muted">Créé par {{ post.author }} le {{ post.createdAt|date("d/m/Y", "Europe/Paris") }}</div>
+                <div class="card-footer text-muted">Créé par {{ post.user.fullname }} le {{ post.createdAt|date("d/m/Y", "Europe/Paris") }}</div>
             </div>
         {% endfor %}
     </div>

@@ -1,0 +1,47 @@
+{% extends 'admin/base.admin.html.twig' %}
+
+{% block title %} {{ parent() }} - Dashboard {% endblock %}
+
+{% block body %}
+
+    <nav>
+        <a href="{{ path('admin.post.new') }}" class="btn btn-primary mb-3">Créer un nouvel article</a>
+    </nav>
+
+    <h2>Articles</h2>
+
+    <table class="table posts-list">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date de création</th>
+                <th scope="col">Titre</th>
+                <th scope="col">Auteur</th>
+                <th scope="col">Image</th>
+                <th scope="col">Catégorie</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+                <tr>
+                    <th scope="row">#{{ post.id }}</th>
+                    <td>{{ post.createdAt|date("d/m/Y", "Europe/Paris") }}</td>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.user.fullname }}</td>
+                    <td>
+                        <figure>
+                            <img src="{{ post.image }}" alt="{{ post.title }}">
+                        </figure>
+                    </td>
+                    <td>{{ post.category.name }}</td>
+                    <td>
+                        <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                        <a href="#" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
