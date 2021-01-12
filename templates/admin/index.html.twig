@@ -30,14 +30,19 @@
                     <td>{{ post.title }}</td>
                     <td>{{ post.user.fullname }}</td>
                     <td>
-                        <figure>
-                            <img src="{{ post.image }}" alt="{{ post.title }}">
-                        </figure>
+                        {% if post.image %}
+                            <figure class="post-image-thumb">
+                                <img src="{{ asset_post_image(post.image) }}" alt="{{ post.title }}">
+                            </figure>
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
                     </td>
                     <td>{{ post.category.name }}</td>
                     <td>
-                        <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                        <a href="#" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                        <a href="{{ path('admin.post.edit', {'id': post.id}) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                        <a href="{{ path('admin.post.removeImage', {'id': post.id}) }}" class="btn btn-warning" title="Supprimer l'image"><i class="fas fa-calendar-times"></i></a>
+                        <a href="{{ path('admin.post.remove', {'id': post.id}) }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
                     </td>
                 </tr>
             {% endfor %}

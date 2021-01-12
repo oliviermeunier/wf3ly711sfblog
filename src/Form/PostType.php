@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 
 class PostType extends AbstractType
 {
@@ -27,7 +28,13 @@ class PostType extends AbstractType
             ->add('imageFile', FileType::class, [
                 'label' => 'Image',
                 'required' => false,
-                'mapped' => false
+                'mapped' => false,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '2M',
+                        'maxSizeMessage' => 'Le fichier ne peut excéder {{ limit }}'
+                    ])
+                ]
             ])
             ->add('category', EntityType::class, [
                 'label' => 'Catégorie',

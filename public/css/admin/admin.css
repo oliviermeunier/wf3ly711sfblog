@@ -1,7 +1,9 @@
-table.posts-list figure {
+figure.post-image-thumb
+{
     width: 150px;
 }
 
-table.posts-list img {
+figure.post-image-thumb img
+{
     width: 100%;
 }

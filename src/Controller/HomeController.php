@@ -19,7 +19,6 @@ class HomeController extends AbstractController
           // services
           // autowiring
 
-
 //        $faker = \Faker\Factory::create('fr_FR');
 //
 //        $posts = [];

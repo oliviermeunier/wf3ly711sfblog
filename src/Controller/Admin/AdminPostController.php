@@ -2,7 +2,10 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Post;
 use App\Form\PostType;
+use App\Repository\PostRepository;
+use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,7 +19,7 @@ class AdminPostController extends AbstractController
     /**
      * @Route("/admin/post/new", name="admin.post.new")
      */
-    public function new(Request $request, SluggerInterface $slugger, EntityManagerInterface $manager): Response
+    public function new(Request $request, SluggerInterface $slugger, EntityManagerInterface $manager, UploaderHelper $uploaderHelper): Response
     {
         $form = $this->createForm(PostType::class);
         $form->handleRequest($request);
@@ -32,25 +35,8 @@ class AdminPostController extends AbstractController
             // Gestion de l'utilisateur associé à l'article
             $post->setUser($this->getUser());
 
-            // Gestion du fichier image
-
-            /**
-             * @var UploadedFile
-             */
-            $uploadedFile = $form->get('imageFile')->getData();
-
-            // Si l'administrateur a rempli le champ image...
-            if ($uploadedFile) {
-
-                // Normalisation du nom du fichier image
-                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $newFilename = $slugger->slug($originalFilename) . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
-
-                $post->setImage($newFilename);
-
-                // Copie du fichier temporaire vers le répertoire de destination
-                $uploadedFile->move('upload/post/image', $newFilename);
-            }
+            // Gestion du fichier image : on utilise notre classe de service
+            $uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
 
             // On persiste en BDD
             $manager->persist($post);
@@ -66,5 +52,80 @@ class AdminPostController extends AbstractController
         return $this->render('admin/post/new.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/admin/post/edit/{id<\d+>}", name="admin.post.edit")
+     */
+    public function edit(Post $post, Request $request, SluggerInterface $slugger, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    {
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $post = $form->getData();
+
+            // Gestion du slug
+            $slug = $slugger->slug($post->getTitle());
+            $post->setSlug($slug);
+
+            // Gestion du fichier image : on utilise notre classe de service
+            $uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
+
+            // On persiste en BDD
+            // $manager->persist($post);
+            $manager->flush();
+
+            // Message flash
+            $this->addFlash('success', 'Article mis à jour.');
+
+            // Redirection vers le dashboard admin
+            return $this->redirectToRoute('admin.index');
+        }
+
+        return $this->render('admin/post/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/post/removeImage/{id<\d+>}", name="admin.post.removeImage")
+     */
+    public function removeImage(Post $post, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    {
+        // Suppression du fichier image
+        $uploaderHelper->removePostImageFile($post);
+
+        // Vider le champ image de l'entité
+        $post->setImage(null);
+
+        // Mise à jour de l'entité en base de données
+        $manager->flush();
+
+        // Message flash
+        $this->addFlash('success', 'Image supprimée.');
+
+        // Redirection vers le dashboard admin
+        return $this->redirectToRoute('admin.index');
+    }
+
+    /**
+     * @Route("/admin/post/remove/{id<\d+>}", name="admin.post.remove")
+     */
+    public function remove(Post $post, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    {
+        // Suppression du fichier image
+        $uploaderHelper->removePostImageFile($post);
+
+        // Suppression de l'entité
+        $manager->remove($post);
+        $manager->flush();
+
+        // Message flash
+        $this->addFlash('success', 'Article supprimé.');
+
+        // Redirection vers le dashboard admin
+        return $this->redirectToRoute('admin.index');
     }
 }
