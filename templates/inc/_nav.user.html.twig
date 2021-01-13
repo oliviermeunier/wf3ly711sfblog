@@ -7,6 +7,7 @@
             <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-expanded="false">{{ app.user.firstname }} {{ app.user.lastname }}</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown01">
                 <li><a class="dropdown-item" href="#">Mon compte</a></li>
+                <li><a class="dropdown-item" href="{{ path('user.bookmarks') }}">Mes favoris</a></li>
                 <li><a class="dropdown-item" href="{{ path('security.logout') }}">Déconnexion</a></li>
             </ul>
         </li>

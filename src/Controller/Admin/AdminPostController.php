@@ -17,9 +17,31 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class AdminPostController extends AbstractController
 {
     /**
+     * @var SluggerInterface
+     */
+    private $slugger;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    /**
+     * @var UploaderHelper
+     */
+    private $uploaderHelper;
+
+    public function __construct(SluggerInterface $slugger, EntityManagerInterface $manager, UploaderHelper $uploaderHelper)
+    {
+        $this->slugger = $slugger;
+        $this->manager = $manager;
+        $this->uploaderHelper = $uploaderHelper;
+    }
+
+    /**
      * @Route("/admin/post/new", name="admin.post.new")
      */
-    public function new(Request $request, SluggerInterface $slugger, EntityManagerInterface $manager, UploaderHelper $uploaderHelper): Response
+    public function new(Request $request): Response
     {
         $form = $this->createForm(PostType::class);
         $form->handleRequest($request);
@@ -29,18 +51,18 @@ class AdminPostController extends AbstractController
             $post = $form->getData();
 
             // Gestion du slug
-            $slug = $slugger->slug($post->getTitle());
+            $slug = $this->slugger->slug($post->getTitle());
             $post->setSlug($slug);
 
             // Gestion de l'utilisateur associé à l'article
             $post->setUser($this->getUser());
 
             // Gestion du fichier image : on utilise notre classe de service
-            $uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
+            $this->uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
 
             // On persiste en BDD
-            $manager->persist($post);
-            $manager->flush();
+            $this->manager->persist($post);
+            $this->manager->flush();
 
             // Message flash
             $this->addFlash('success', 'Article ajouté.');
@@ -57,7 +79,7 @@ class AdminPostController extends AbstractController
     /**
      * @Route("/admin/post/edit/{id<\d+>}", name="admin.post.edit")
      */
-    public function edit(Post $post, Request $request, SluggerInterface $slugger, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    public function edit(Post $post, Request $request)
     {
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
@@ -67,15 +89,14 @@ class AdminPostController extends AbstractController
             $post = $form->getData();
 
             // Gestion du slug
-            $slug = $slugger->slug($post->getTitle());
+            $slug = $this->slugger->slug($post->getTitle());
             $post->setSlug($slug);
 
             // Gestion du fichier image : on utilise notre classe de service
-            $uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
+            $this->uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());
 
             // On persiste en BDD
-            // $manager->persist($post);
-            $manager->flush();
+            $this->manager->flush();
 
             // Message flash
             $this->addFlash('success', 'Article mis à jour.');
@@ -92,16 +113,16 @@ class AdminPostController extends AbstractController
     /**
      * @Route("/admin/post/removeImage/{id<\d+>}", name="admin.post.removeImage")
      */
-    public function removeImage(Post $post, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    public function removeImage(Post $post)
     {
         // Suppression du fichier image
-        $uploaderHelper->removePostImageFile($post);
+        $this->uploaderHelper->removePostImageFile($post);
 
         // Vider le champ image de l'entité
         $post->setImage(null);
 
         // Mise à jour de l'entité en base de données
-        $manager->flush();
+        $this->manager->flush();
 
         // Message flash
         $this->addFlash('success', 'Image supprimée.');
@@ -113,14 +134,14 @@ class AdminPostController extends AbstractController
     /**
      * @Route("/admin/post/remove/{id<\d+>}", name="admin.post.remove")
      */
-    public function remove(Post $post, UploaderHelper $uploaderHelper, EntityManagerInterface $manager)
+    public function remove(Post $post)
     {
         // Suppression du fichier image
-        $uploaderHelper->removePostImageFile($post);
+        $this->uploaderHelper->removePostImageFile($post);
 
         // Suppression de l'entité
-        $manager->remove($post);
-        $manager->flush();
+        $this->manager->remove($post);
+        $this->manager->flush();
 
         // Message flash
         $this->addFlash('success', 'Article supprimé.');

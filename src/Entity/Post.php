@@ -68,12 +68,18 @@ class Post
      */
     private $user;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="bookmarks")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
 
         // Initialisation de la propriété createdAt
         $this->createdAt = new \DateTime('now', new DateTimeZone('Europe/Paris'));
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -191,6 +197,33 @@ class Post
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addBookmark($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeBookmark($this);
+        }
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;

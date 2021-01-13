@@ -66,8 +66,15 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Post::class, mappedBy="user")
+     * @var Collection
      */
     private $posts;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Post::class, inversedBy="users")
+     * @var Collection
+     */
+    private $bookmarks;
 
     public function __construct()
     {
@@ -76,6 +83,7 @@ class User implements UserInterface
         // Initialisation de la propriété createdAt
         $this->createdAt = new \DateTime('now', new DateTimeZone('Europe/Paris'));
         $this->posts = new ArrayCollection();
+        $this->bookmarks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -263,6 +271,30 @@ class User implements UserInterface
                 $post->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getBookmarks(): Collection
+    {
+        return $this->bookmarks;
+    }
+
+    public function addBookmark(Post $bookmark): self
+    {
+        if (!$this->bookmarks->contains($bookmark)) {
+            $this->bookmarks[] = $bookmark;
+        }
+
+        return $this;
+    }
+
+    public function removeBookmark(Post $bookmark): self
+    {
+        $this->bookmarks->removeElement($bookmark);
 
         return $this;
     }

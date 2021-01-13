@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} - Favoris{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        {% for post in bookmarks %}
+            <div class="card mb-4 col-xl-3">
+                <div class="card-header">
+                    <figure class="figure">
+                        <img src="{{ asset_post_image(post.image) }}" alt="{{ post.title }}" class="figure-img img-fluid rounded">
+                    </figure>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <span class="badge bg-secondary">{{ post.category.name }}</span>
+                    <p class="card-text">{{ post.content|slice(0, 150) }} ...</p>
+                    <a href="{{ path('post.index', {'slug': post.slug}) }}" class="btn btn-primary">Lire la suite</a>
+                    <a href="{{ path('user.removeBookmark', {'id': post.id}) }}" class="btn btn-danger mb-3" title="Supprimer des favoris"><i class="far fa-times-circle"></i></a>
+                </div>
+                <div class="card-footer text-muted">Créé par {{ post.user.fullname }} le {{ post.createdAt|date("d/m/Y", "Europe/Paris") }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

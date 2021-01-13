@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
+use App\Entity\User;
 use App\Form\UserType;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,11 +18,20 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 class UserController extends AbstractController
 {
     /**
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    public function __construct(EntityManagerInterface $manager)
+    {
+        $this->manager = $manager;
+    }
+
+    /**
      * @Route("/signup", name="user.signup")
      */
     public function signup(Request $request,
                            UserPasswordEncoderInterface $encoder,
-                           EntityManagerInterface $manager,
                            GuardAuthenticatorHandler $authenticatorHandler,
                            LoginFormAuthenticator $authenticator): Response
     {
@@ -42,8 +53,8 @@ class UserController extends AbstractController
             $user->setPassword($hashedPassword);
 
             // Persistance en base de données
-            $manager->persist($user);
-            $manager->flush();
+            $this->manager->persist($user);
+            $this->manager->flush();
 
             // Message flash
             $this->addFlash('success', 'Votre compte est créé, vous pouvez vous connecter.');
@@ -56,6 +67,61 @@ class UserController extends AbstractController
 
         return $this->render('user/signup.html.twig', [
             'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/user/bookmark/add/{id<\d+>}", name="user.addBookmark")
+     */
+    public function addBookmark(Post $post, Request $request)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+        $user->addBookmark($post);
+        $post->addUser($user);
+        $this->manager->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->json('ok');
+        }
+
+        $this->addFlash('success', 'Favori ajouté.');
+        return $this->redirectToRoute('post.index', ['slug' => $post->getSlug()]);
+    }
+
+    /**
+     * @Route("/user/bookmark/remove/{id<\d+>}", name="user.removeBookmark")
+     */
+    public function removeBookmark(Post $post, Request $request)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+        $user->removeBookmark($post);
+
+        $this->manager->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->json('ok');
+        }
+
+        $this->addFlash('success', 'Favori supprimé.');
+        return $this->redirectToRoute('post.index', ['slug' => $post->getSlug()]);
+    }
+
+    /**
+     * @Route("/bookmarks", name="user.bookmarks")
+     */
+    public function showBookmarks()
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+        $bookmarks = $user->getBookmarks();
+
+        return $this->render('user/bookmarks.html.twig', [
+            'bookmarks' => $bookmarks
         ]);
     }
 }

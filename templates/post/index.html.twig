@@ -7,10 +7,23 @@
     <!-- Affichage de l'article -->
     <h2>{{ post.title }}</h2>
     <span class="badge bg-secondary">{{ post.category.name }}</span>
-
     <p class="lead">Créé par {{ post.user.fullname }} le {{ post.createdAt|date('d/m/Y') }}</p>
 
-    <img src="{{ asset_post_image(post.image) }}" alt="{{ post.title }}" class="img-fluid rounded">
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        {% if post in app.user.bookmarks %}
+            <a href="{{ path('user.removeBookmark', {'id': post.id}) }}" class="bookmark-button btn btn-primary mb-3" title="Supprimer des favoris"><i class="fas fa-bookmark"></i></a>
+            <a href="{{ path('user.addBookmark', {'id': post.id}) }}" class="bookmark-button btn btn-primary mb-3 d-none" title="Ajouter en favoris"><i class="far fa-bookmark"></i></a>
+        {% else %}
+            <a href="{{ path('user.addBookmark', {'id': post.id}) }}" class="bookmark-button btn btn-primary mb-3" title="Ajouter en favoris"><i class="far fa-bookmark"></i></a>
+            <a href="{{ path('user.removeBookmark', {'id': post.id}) }}" class="bookmark-button btn btn-primary mb-3 d-none" title="Supprimer des favoris"><i class="fas fa-bookmark"></i></a>
+        {% endif %}
+    {% endif %}
+
+    {% if post.image %}
+        <figure>
+            <img src="{{ asset_post_image(post.image) }}" alt="{{ post.title }}" class="img-fluid rounded">
+        </figure>
+    {% endif %}
 
     <p class="lead">{{ post.content }}</p>
 
@@ -45,4 +58,11 @@
         </ul>
     {% endif %}
 
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('js/post.js') }}"></script>
 {% endblock %}
