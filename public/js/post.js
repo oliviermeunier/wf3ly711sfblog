@@ -3,30 +3,25 @@
  */
 const buttons = document.querySelectorAll('.bookmark-button');
 
-function onAjaxGetResponse(data)
-{
-    for (const button of buttons) {
-        button.classList.toggle('d-none');
-    }
-}
-
-// Code principal
 for (const button of buttons) {
 
-    button.addEventListener('click', event => {
+    button.addEventListener('click', async event => {
 
         event.preventDefault();
 
         const url = event.currentTarget.href;
-
-        fetch(url, {
+        const options = {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
-        })
-            .then(response => response.json())
-            .then(onAjaxGetResponse);
+        };
 
+        const httpResponse = await fetch(url, options);
+        const reponse = await httpResponse.json();
+
+        for (const button of buttons) {
+            button.classList.toggle('d-none');
+        }
     });
 }
 

@@ -79,7 +79,7 @@ class UserController extends AbstractController
 
         $user = $this->getUser();
         $user->addBookmark($post);
-        $post->addUser($user);
+//        $post->addUser($user);
         $this->manager->flush();
 
         if ($request->isXmlHttpRequest()) {

@@ -17,12 +17,13 @@ class AppFixtures extends Fixture
 //        $faker = \Faker\Factory::create('fr_FR');
 //
 //        $post = new Post();
-//        $post->setTitle($faker->sentence());
+//        $post->setTitle('VRAI CONTENU');
 //        $post->setContent($faker->text(2000));
 //        $post->setAuthor($faker->name());
 //        $post->setImage('https://picsum.photos/seed/post/750/300');
 //        $post->setCreatedAt($faker->dateTimeBetween('-3 years', 'now', 'Europe/Paris'));
 //
+
 //        $manager->persist($post);
 
         // Création de 10 utilisateurs
