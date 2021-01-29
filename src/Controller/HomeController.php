@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Repository\PostRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
@@ -12,32 +15,27 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="home.index")
      */
-    public function index(PostRepository $postRepository): Response
+    public function index(bool $isMac, HttpKernelInterface $httpKernel, PostRepository $postRepository, LoggerInterface $logger): Response
     {
-          // injection de dépendances
-          // container
-          // services
-          // autowiring
+//        $logger->info('I\'m the controller !');
 
-//        $faker = \Faker\Factory::create('fr_FR');
+//        dd($isMac);
+
+//        $subRequest = new Request();
 //
-//        $posts = [];
+//        $subRequest->attributes->set('_controller', 'App\\Controller\\PartialController::sayHello');
+//        $subRequest->server->set('REMOTE_ADDR', '127.0.0.1');
 //
-//        for ($i = 0 ; $i < 10 ; $i++) {
-//            $post = new \StdClass();
-//            $post->title = $faker->sentence();
-//            $post->content = $faker->text(2000);
-//            $post->author = $faker->name();
-//            $post->image = 'https://picsum.photos/seed/post-'.$i.'/750/300';
-//            $post->createdAt = $faker->dateTimeBetween('-3 years', 'now', 'Europe/Paris');
-//
-//            array_push($posts, $post);
-//        }
+//        $response = $httpKernel->handle(
+//            $subRequest,
+//            HttpKernelInterface::SUB_REQUEST
+//        );
 
         $posts = $postRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->render('home/index.html.twig', [
-            'posts' => $posts
+            'posts' => $posts,
+            'isMac' => $isMac
         ]);
     }
 }

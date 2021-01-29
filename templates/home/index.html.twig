@@ -18,6 +18,20 @@
 
     {# foreach ($posts as $post) {} #}
 
+    {{ render(controller('App\\Controller\\PartialController::sayHello', {
+        'isMac': isMac
+    })) }}
+
+    <section>
+        <h2>From the HomeController main request</h2>
+        {% if isMac %}
+            <hr>
+            <small>BTW, you're using a Mac!</small>
+        {% else %}
+            <small>BTW, you're NOT using a Mac!</small>
+        {% endif %}
+    </section>
+
     <div class="row">
         {% for post in posts %}
             <div class="card mb-4 col-xl-3">

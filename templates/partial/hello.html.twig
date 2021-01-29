@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PartialController!{% endblock %}
+
+{% block body %}
+<h2>Helloooooooo !! :)</h2>
+
+    {% if isMac %}
+        <hr>
+        <small>BTW, you're using a Mac!</small>
+    {% else %}
+        <small>BTW, you're NOT using a Mac!</small>
+    {% endif %}
+
+{% endblock %}

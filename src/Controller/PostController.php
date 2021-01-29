@@ -6,19 +6,27 @@ use App\Entity\Post;
 use App\Form\CommentType;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Exception\NoConfigurationException;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class PostController extends AbstractController
 {
     /**
      * @Route("/post/{slug}", name="post.index")
      */
-    public function index($slug, Post $post, Request $request, EntityManagerInterface $manager /*$slug, PostRepository $postRepository*/): Response
+    public function index( UserInterface $user = null, SessionInterface $session, Post $post, Request $request, EntityManagerInterface $manager, PostRepository $postRepository): Response
     {
-        //$post = $postRepository->findOneBy(['slug' => $slug]);
+//        $post = $postRepository->findOneBy(['slug' => $slug]);
+
+        if (!$post) {
+            throw $this->createNotFoundException();
+        }
 
         // Création de l'objet CommentType (formulaire)
         $form = $this->createForm(CommentType::class);
