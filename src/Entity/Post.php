@@ -73,6 +73,11 @@ class Post
      */
     private $users;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ArticleReference::class, mappedBy="article")
+     */
+    private $articleReferences;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -80,6 +85,7 @@ class Post
         // Initialisation de la propriété createdAt
         $this->createdAt = new \DateTime('now', new DateTimeZone('Europe/Paris'));
         $this->users = new ArrayCollection();
+        $this->articleReferences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -227,4 +233,13 @@ class Post
 
         return $this;
     }
+
+    /**
+     * @return Collection|ArticleReference[]
+     */
+    public function getArticleReferences(): Collection
+    {
+        return $this->articleReferences;
+    }
+
 }

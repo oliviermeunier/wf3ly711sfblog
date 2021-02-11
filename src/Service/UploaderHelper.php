@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Entity\Post;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -24,12 +25,18 @@ class UploaderHelper {
      * @var Filesystem
      */
     private $filesystem;
+    private $privateFilesystem;
+    private $publicFilesystem;
 
-    public function __construct(SluggerInterface $slugger, string $postImageDirectory, Filesystem $filesystem)
+    const ARTICLE_REFERENCE = 'article_reference';
+
+    public function __construct(SluggerInterface $slugger, string $postImageDirectory, Filesystem $filesystem, $privateUploadsFilesystem, $publicUploadsFilesystem)
     {
         $this->slugger = $slugger;
         $this->postImageDirectory = $postImageDirectory;
         $this->filesystem = $filesystem;
+        $this->privateFilesystem = $privateUploadsFilesystem;
+        $this->publicFilesystem = $publicUploadsFilesystem;
     }
 
     public function uploadPostImage(Post $post, ?UploadedFile $uploadedFile)
@@ -61,6 +68,66 @@ class UploaderHelper {
             if ($this->filesystem->exists($currentPath)) {
                 $this->filesystem->remove($currentPath);
             }
+        }
+    }
+
+    public function uploadArticleReference(File $file): string
+    {
+        return $this->uploadFile($file, self::ARTICLE_REFERENCE, false);
+    }
+
+    private function uploadFile(File $file, string $directory, bool $isPublic): string
+    {
+        if ($file instanceof UploadedFile) {
+            $originalFilename = $file->getClientOriginalName();
+        } else {
+            $originalFilename = $file->getFilename();
+        }
+
+        $newFilename = $this->slugger->slug($originalFilename) . '-' . uniqid() . '.' . $file->guessExtension();
+        $stream = fopen($file->getPathname(), 'r');
+
+        $filesystem = $isPublic ? $this->publicFilesystem : $this->privateFilesystem;
+
+        $result = $filesystem->writeStream(
+            $directory.'/'.$newFilename,
+            $stream
+        );
+
+        if ($result === false) {
+            throw new \Exception(sprintf('Could not write uploaded file "%s"', $newFilename));
+        }
+
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+
+        return $newFilename;
+    }
+
+    /**
+     * @return resource
+     */
+    public function readStream(string $path, bool $isPublic)
+    {
+        $filesystem = $isPublic ? $this->publicFilesystem : $this->privateFilesystem;
+
+        $resource = $filesystem->readStream($path);
+
+        if ($resource === false) {
+            throw new \Exception(sprintf('Error opening stream for "%s"', $path));
+        }
+
+        return $resource;
+    }
+
+
+    public function deleteFile(string $path, bool $isPublic)
+    {
+        $filesystem = $isPublic ? $this->publicFilesystem : $this->privateFilesystem;
+        $result = $filesystem->delete($path);
+        if ($result === false) {
+            throw new \Exception(sprintf('Error deleting "%s"', $path));
         }
     }
 }
