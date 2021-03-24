@@ -42,3 +42,7 @@ services:
     App\Twig\AppExtension:
         bind:
             $postImageUrl: "%env(SITE_BASE_URL)%/%post_image_directory%"
+
+    App\EventListener\PostSluggerSubscriber:
+        tags:
+            - { name: 'doctrine.event_subscriber' }

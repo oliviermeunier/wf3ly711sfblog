@@ -31,9 +31,9 @@ class AdminPostController extends AbstractController
      */
     private $uploaderHelper;
 
-    public function __construct(SluggerInterface $slugger, EntityManagerInterface $manager, UploaderHelper $uploaderHelper)
+    public function __construct(/*SluggerInterface $slugger,*/ EntityManagerInterface $manager, UploaderHelper $uploaderHelper)
     {
-        $this->slugger = $slugger;
+//        $this->slugger = $slugger;
         $this->manager = $manager;
         $this->uploaderHelper = $uploaderHelper;
     }
@@ -51,8 +51,8 @@ class AdminPostController extends AbstractController
             $post = $form->getData();
 
             // Gestion du slug
-            $slug = $this->slugger->slug($post->getTitle());
-            $post->setSlug($slug);
+//            $slug = $this->slugger->slug($post->getTitle());
+//            $post->setSlug($slug);
 
             // Gestion de l'utilisateur associé à l'article
             $post->setUser($this->getUser());
@@ -89,8 +89,8 @@ class AdminPostController extends AbstractController
             $post = $form->getData();
 
             // Gestion du slug
-            $slug = $this->slugger->slug($post->getTitle());
-            $post->setSlug($slug);
+//            $slug = $this->slugger->slug($post->getTitle());
+//            $post->setSlug($slug);
 
             // Gestion du fichier image : on utilise notre classe de service
             $this->uploaderHelper->uploadPostImage($post, $form->get('imageFile')->getData());

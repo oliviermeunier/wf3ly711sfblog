@@ -19,6 +19,28 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
+    public function search($categoryId, $createdAtMin)
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+
+        if ($categoryId) {
+            $queryBuilder
+                ->andWhere('p.category = :categoy_id')
+                ->setParameter('categoy_id', $categoryId);
+        }
+
+        if ($createdAtMin) {
+            $queryBuilder
+                ->andWhere('p.createdAt >= :created_at_min')
+                ->setParameter('created_at_min', $createdAtMin);
+        }
+
+        return $queryBuilder
+                    ->orderBy('p.createdAt', 'ASC')
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return Post[] Returns an array of Post objects
     //  */

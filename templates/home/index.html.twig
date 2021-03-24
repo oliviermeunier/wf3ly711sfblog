@@ -18,21 +18,44 @@
 
     {# foreach ($posts as $post) {} #}
 
-    {{ render(controller('App\\Controller\\PartialController::sayHello', {
-        'isMac': isMac
-    })) }}
+{#    {{ render(controller('App\\Controller\\PartialController::sayHello', {#}
+{#        'isMac': isMac#}
+{#    })) }}#}
 
     <h1>Accueil</h1>
 
-    <section>
-        <h2>From the HomeController main request</h2>
-        {% if isMac %}
-            <hr>
-            <small>BTW, you're using a Mac!</small>
-        {% else %}
-            <small>BTW, you're NOT using a Mac!</small>
-        {% endif %}
-    </section>
+{#    <section>#}
+{#        <h2>From the HomeController main request</h2>#}
+{#        {% if isMac %}#}
+{#            <hr>#}
+{#            <small>BTW, you're using a Mac!</small>#}
+{#        {% else %}#}
+{#            <small>BTW, you're NOT using a Mac!</small>#}
+{#        {% endif %}#}
+{#    </section>#}
+
+
+{#    <form method="post" class="my-5">#}
+{#        <legend>Filtrer les articles</legend>#}
+{#        <div>#}
+{#            <label for="category">Catégorie</label>#}
+{#            <select name="category" id="category">#}
+{#                <option value="0">Toutes les catégories</option>#}
+{#                {% for category in categories %}#}
+{#                    <option value="{{ category.id }}">{{ category.name }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#        </div>#}
+{#        <div>#}
+{#            <label for="created-at-min">Articles parus après</label>#}
+{#            <input type="date" name="created-at-min" id="created-at-min">#}
+{#        </div>#}
+{#        <input class="btn btn-primary mt-3" type="submit" value="Rechercher">#}
+{#    </form>#}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 
     <div class="row">
         {% for post in posts %}
