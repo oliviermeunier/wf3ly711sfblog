@@ -52,12 +52,12 @@ class Post
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="posts")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", cascade="remove")
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", orphanRemoval=true)
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $comments;
