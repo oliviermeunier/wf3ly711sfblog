@@ -1,0 +1,35 @@
+{% extends 'admin/base.admin.html.twig' %}
+
+{% block title %} {{ parent() }} - Gestion des catégories {% endblock %}
+
+{% block body %}
+
+    <nav>
+        <a href="{{ path('admin.category.new') }}" class="btn btn-primary mb-3">Ajouter une catégorie</a>
+    </nav>
+
+    <h2>Liste des catégories</h2>
+
+    <table class="table posts-list">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Intitulé</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            <tr>
+                <th scope="row">#{{ category.id }}</th>
+                <td>{{ category.name }}</td>
+                <td>
+                    <a href="{{ path('admin.category.edit', {'id': category.id}) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                    <a href="{{ path('admin.category.remove', {'id': category.id}) }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

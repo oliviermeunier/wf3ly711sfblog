@@ -136,7 +136,7 @@
         ]
     },
     "php": {
-        "version": "8.0"
+        "version": "7.4"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
@@ -507,6 +507,9 @@
     },
     "webmozart/assert": {
         "version": "1.9.1"
+    },
+    "zenstruck/callback": {
+        "version": "v1.2.0"
     },
     "zenstruck/foundry": {
         "version": "v1.6.0"
